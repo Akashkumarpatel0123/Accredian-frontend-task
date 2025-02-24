@@ -1,37 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Modal, Form, Table } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+
+// ✅ Use the correct backend API URL (Render deployed URL)
 const API_URL = "https://accredian-backend.onrender.com";
+
 const ReferEarn = () => {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState({ referrer: "", referee: "" });
   const [referrals, setReferrals] = useState([]);
 
-  // Fetch Referrals from Backend
+  // ✅ Fetch referrals when component loads
   useEffect(() => {
-    axios.get("http://localhost:5000/get-referrals")
+    axios.get(`${API_URL}/get-referrals`)
       .then((response) => setReferrals(response.data))
       .catch((error) => console.error("Error fetching referrals:", error));
   }, []);
 
-  // Handle Form Input Change
+  // ✅ Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Submit Referral to Backend
+  // ✅ Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/add-referral", formData);
+      await axios.post(`${API_URL}/add-referral`, formData);
       alert("Referral Submitted Successfully!");
       setShow(false);
       setFormData({ referrer: "", referee: "" });
-      window.location.reload(); // Refresh list
+      fetchReferrals(); // ✅ Refresh the list without reloading page
     } catch (error) {
       alert("Error submitting referral");
+      console.error("Referral Submission Error:", error);
     }
+  };
+
+  // ✅ Fetch referrals (reusable function)
+  const fetchReferrals = () => {
+    axios.get(`${API_URL}/get-referrals`)
+      .then((response) => setReferrals(response.data))
+      .catch((error) => console.error("Error fetching referrals:", error));
   };
 
   return (
@@ -39,7 +50,7 @@ const ReferEarn = () => {
       <h1>Refer & Earn</h1>
       <Button variant="primary" onClick={() => setShow(true)}>Refer Now</Button>
 
-      {/* Referral Modal */}
+      {/* ✅ Referral Modal */}
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton><Modal.Title>Refer a Friend</Modal.Title></Modal.Header>
         <Modal.Body>
@@ -57,14 +68,23 @@ const ReferEarn = () => {
         </Modal.Body>
       </Modal>
 
-      {/* Display Referrals */}
+      {/* ✅ Display Referrals */}
       <h3 className="mt-4">Referral List</h3>
       <Table striped bordered hover>
         <thead><tr><th>#</th><th>Referrer</th><th>Referee</th><th>Date</th></tr></thead>
         <tbody>
-          {referrals.map((ref, index) => (
-            <tr key={ref.id}><td>{index + 1}</td><td>{ref.referrer}</td><td>{ref.referee}</td><td>{ref.created_at}</td></tr>
-          ))}
+          {referrals.length > 0 ? (
+            referrals.map((ref, index) => (
+              <tr key={ref.id}>
+                <td>{index + 1}</td>
+                <td>{ref.referrer}</td>
+                <td>{ref.referee}</td>
+                <td>{new Date(ref.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr><td colSpan="4">No referrals found</td></tr>
+          )}
         </tbody>
       </Table>
     </div>
@@ -72,3 +92,4 @@ const ReferEarn = () => {
 };
 
 export default ReferEarn;
+
