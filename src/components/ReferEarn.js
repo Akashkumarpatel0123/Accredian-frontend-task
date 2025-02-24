@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Modal, Form, Table } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+const API_URL = "https://accredian-backend.onrender.com";
 const ReferEarn = () => {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState({ referrer: "", referee: "" });
