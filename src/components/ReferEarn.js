@@ -10,7 +10,7 @@ const ReferEarn = () => {
 
   // Fetch Referrals from Backend
   useEffect(() => {
-    axios.get("http://localhost:5000/get-referrals")
+    axios.get("http://localhost:10000/get-referrals")
       .then((response) => setReferrals(response.data))
       .catch((error) => console.error("Error fetching referrals:", error));
   }, []);
@@ -24,7 +24,7 @@ const ReferEarn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/add-referral", formData);
+      await axios.post("http://localhost:10000/add-referral", formData);
       alert("Referral Submitted Successfully!");
       setShow(false);
       setFormData({ referrer: "", referee: "" });
